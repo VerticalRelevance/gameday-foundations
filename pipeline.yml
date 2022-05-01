@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  BranchName:
+    Description: Branch of github repo 
+    Type: String 
+    Default: master
+  RepositoryName:
+    Description: Github repository name
+    Type: String 
+    Default: verticalrelevance/gameday-foundations
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "CodePipeline Settings"
+        Parameters:
+          - ProjectName
+      - Label:
+          default: "GitHub Settings"
+        Parameters:
+          - GitHubRepo
+Resources: 
+  AppPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Type: S3
+        Location: artifactsBucket
+      RoleArn:
+        Ref: CodePipelineServiceRole
+      Stages:
+        -
+          Name: Source
+          Actions:
+            - InputArtifacts: []
+              ActionTypeId:
+                Version: '1'
+                Owner: AWS
+                Category: Source 
+                Provider: CodeStarSourceConnection
+              OutputArtifacts:
+                - Name: SourceArtifact
+              RunOrder: 1
+              Configuration:
+                ConnectionArn: arn:aws:codestar-connections:us-east-1:899456967600:connection/970e3315-60f3-45ce-a10d-045634f6c134
+                FullRepositoryId: "gameday-foundations"
+                BranchName: "dev"
+                OutpuArtifactFormat: "CODEBUILD_CLONE_REF"
+              Name: AppSource
+        -  
+          Name: Build
+          Actions:
+          - InputArtifacts: SourceArtifact
+            ActionTypeId:
+              Version: '1'
+              Owner: AWS
+              Category: Build
+              Provider: CodeBuild
+            Configuration:
+              ProjectName: !Ref CodeBuildProject
+            RunOrder: 2
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Source:
+        Type: CODEPIPELINE 
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:17.09.0
+        Type: LINUX_CONTAINER
+      Name: resiliency-build
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [codepipeline.amazonaws.com]
+          Version: '2012-10-17'
+      Path: /
+  PipelineRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: PipelinePolicy
+      PolicyDocument:
+        Statement: 
+          - Effect: Allow
+            Action:
+            - 'ssm:CreateDocument'
+            - 'codebuild:*'
+            - 'iam:PassRole'
+        Resource: '*'
+
+
+              
+            
