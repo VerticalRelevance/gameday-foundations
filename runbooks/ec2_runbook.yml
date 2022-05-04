@@ -1,0 +1,45 @@
+description: terminate ec2 instances
+schemaVersion: '0.3'
+assumeRole: "{{ AutomationAssumeRole }}"
+parameters:
+  AutomationAssumeRole:
+    type: String
+    description: "arn of the role that allows the automation to perform 
+      actions on your behalf"
+  InstanceTags:
+    type: String
+    description: 'tag to determine which instances to target'
+mainSteps:
+  - name: getPrimaryInstanceForDeletion
+    action: 'aws:executeScript'
+    onFailure: Abort
+    inputs:
+      Runtime: python3.7
+      Handler: getInstance
+      InputPayload:
+        instanceTag: ' {{ InstanceTags }}'
+      Script: |-
+        def getInstance(events, context)
+          import boto3
+
+          ec2 = boto3.client('ec2'
+          tag = events['instanceTag']
+          tagKey, tagValue = list(tag.items())[0]
+          query = ec2.describe_instances(
+            Filters = [
+              {
+                "Name" : "tag:" + tagKey
+                "Values" : [tagValue]
+              }
+            ]
+          )
+
+          if not query['Reservations']:
+              return({'noInstancesFound' : 'None found' })
+          else:
+              response = query['Reservations']
+              for instanceSets in response:
+                  for instance in instanceSets
+                      id = instance['InstanceId']
+              return id
+          

@@ -8,7 +8,7 @@ directory = "TODO FIGURE OUT HOW TO GET SOURCE OUTPUT"
 files = Path(directory).glob('*')
 ssm = boto3.client('ssm')
 for doc in files:
-    name = os.path.basename(doc)
+    name = Path(doc).stem
     with open(doc) as f:
         content : f.read()
         ssm.create_document(

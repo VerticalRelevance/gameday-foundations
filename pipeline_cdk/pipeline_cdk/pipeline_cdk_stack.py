@@ -6,13 +6,16 @@ from aws_cdk import (
     aws_codestarconnections as codestar,
     aws_codebuild as codebuild,
     aws_codepipeline_actions as codepipeline_actions,
+    aws_ssm as ssm,
     aws_iam as iam
 )
+from cdk_ssm_document import Document
+import os
+from pathlib import Path
 from constructs import Construct
 
 class PipelineCdkStack(Stack):
-
-
+ 
     def createCodePipelinePolicy(self, codestar_connections_github_arn):
         codepipeline_policy= iam.ManagedPolicy(
             self, "codepipeline_policy",
@@ -40,7 +43,7 @@ class PipelineCdkStack(Stack):
                 ),
 
                 iam.PolicyStatement(
-                    effect = iam.Effect.Allow,
+                    effect = iam.Effect.ALLOW,
                     actions = [
                         "codebuild:StartBuild"
                     ],
@@ -61,25 +64,24 @@ class PipelineCdkStack(Stack):
                 output=source_output,
                 connection_arn= codestar_connections_github_arn,
             ),
-        pipeline = pipelines.Pipeline(
+        pipeline = pipelines.CodePipeline(
             self, "Pipeline", 
-            pipeline_name="Gameday-Pipeline",
+            self_mutation=False,
+            synth = pipelines.ShellStep("Synth",
+                input = pipelines.CodePipelineSource.connection(
+                    "VerticalRelevance/gameday-foundations",
+                    "dev",
+                    connection_arn = "arn:aws:codestar-connections:region:account-id:connection/connection-id"
+                ),
 
-            stages=[
-                codepipeline.StageProps(stage_name="Source", actions = [source_action]),
-                codepipeline.StageProps(
-                    stage_name="Build",
-                    actions = [ 
-                        codepipeline_actions.CodeBuildAction(
-                        action_name="Build",
-                        project=codebuild.PipelineProject(self, "MyProject"),
-                        input=source_output
-                        )
-                    ],
-                )
-               
-            ]                                         
+            
+            commands = ["./upload.sh"]
+            )
         )
+
+            #What to do here? How do I link this build action with
+            ##the uplopad? Should I use a Lambda?
+       
             
 
 
