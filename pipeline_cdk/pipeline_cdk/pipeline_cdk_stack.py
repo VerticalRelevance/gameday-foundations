@@ -94,7 +94,7 @@ class GameDayPipelineStack(Stack):
                         ],
 
                         resources=[
-                            "document"
+                            "*"
                         ]
                     )
                 ]    
