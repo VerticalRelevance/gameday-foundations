@@ -6,8 +6,9 @@ echo "Entered Runbooks directory"
 
 for file in "/runbooks"/*; do
     echo "uploading $file"
-    docname = basename $file .yml
+    docname=$(basename "$file" .yml)
     aws ssm create-document \
-        --content file://$file
-        --name $docname
+        --content file://"$file" \
+        --name "$docname" \
         --document-type "Automation"
+done
