@@ -10,5 +10,6 @@ for file in *; do
     aws ssm create-document \
         --content file://"$file" \
         --name "$docname" \
+        --document-format "YAML" \
         --document-type "Automation"
 done
