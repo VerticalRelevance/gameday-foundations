@@ -1,4 +1,4 @@
-description: terminate ec2 instances
+description: 'terminate ec2 instances'
 schemaVersion: '0.3'
 assumeRole: "{{ AutomationAssumeRole }}"
 parameters:
