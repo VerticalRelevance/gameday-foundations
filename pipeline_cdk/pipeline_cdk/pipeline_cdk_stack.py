@@ -17,7 +17,7 @@ from constructs import Construct
 import aws_cdk as core
 import boto3
 
-class PipelineCdkStack(Stack):
+class GameDayPipelineStack(Stack):
  
     def createCodePipelinePolicy(self, codestar_connections_github_arn):
         codepipeline_policy= iam.ManagedPolicy(
@@ -61,9 +61,8 @@ class PipelineCdkStack(Stack):
         #codestar_connections_github_arn = core.SecretValue.secrets_manager("gameday-foundations-pipeline-secret").to_string()
 
         client = boto3.client("secretsmanager", "us-east-1")
-        codestar_connections_github_arn = client.get_secret_value(
-            SecretId='gameday-foundations-pipeline-secret'
-        )["SecretString"]
+        codestar_connections_github_arn = core.Arn.extract_resource_name(client.get_secret_value(
+            SecretId='gameday-foundations-pipeline-secret')["SecretString"])
 
         
 
