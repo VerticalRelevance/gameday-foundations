@@ -81,7 +81,7 @@ class GameDayPipelineStack(Stack):
                                       ),
 
 
-                                      commands= ["./upload.sh"]
+                                      commands= ["chmod u+x upload.sh", "./upload.sh"]
                                         
                                       )
         )
