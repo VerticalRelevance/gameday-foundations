@@ -83,5 +83,20 @@ class GameDayPipelineStack(Stack):
 
                                       commands= ["chmod u+x upload.sh", "./upload.sh"]
                                         
-                                      )
+            ),
+            code_build_defaults=pipelines.CodeBuildOptions(
+
+                role_policy=[
+                    iam.PolicyStatement(
+                        effect=iam.Effect.ALLOW,
+                        actions=[
+                            "ssm:CreateDocument"
+                        ],
+
+                        resources=[
+                            "document"
+                        ]
+                    )
+                ]    
+            )
         )
