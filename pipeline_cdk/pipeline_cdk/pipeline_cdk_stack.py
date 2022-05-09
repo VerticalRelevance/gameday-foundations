@@ -62,7 +62,7 @@ class GameDayPipelineStack(Stack):
 
         client = boto3.client("secretsmanager", "us-east-1")
         codestar_connections_github_arn = core.Arn.extract_resource_name(client.get_secret_value(
-            SecretId='gameday-foundations-pipeline-secret')["SecretString"])
+            SecretId='gameday-foundations-pipeline-secret')["SecretString"], 'connection')
 
         
 

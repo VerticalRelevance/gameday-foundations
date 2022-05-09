@@ -2,7 +2,6 @@
 import os
 
 import aws_cdk as cdk
-from pipeline_cdk.pipeline_cdk.pipeline_cdk_stack import GameDayPipelineStack
 
 from pipeline_cdk.pipeline_cdk_stack import GameDayPipelineStack
 
