@@ -98,5 +98,7 @@ class GameDayPipelineStack(Stack):
                         ]
                     )
                 ]    
-            )
+            ),
+
+            synth_code_build_defaults=pipelines.CodeBuildOptions()
         )
