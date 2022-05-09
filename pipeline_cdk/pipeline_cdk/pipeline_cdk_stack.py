@@ -9,10 +9,13 @@ from aws_cdk import (
     aws_ssm as ssm,
     aws_iam as iam
 )
+
 from cdk_ssm_document import Document
 import os
 from pathlib import Path
 from constructs import Construct
+import aws_cdk as core
+import boto3
 
 class PipelineCdkStack(Stack):
  
@@ -54,24 +57,25 @@ class PipelineCdkStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
-        codestar_connections_github_arn = "arn:aws:codestar-connections:region:account-id:connection/connection-id"
+        
+        #codestar_connections_github_arn = core.SecretValue.secrets_manager("gameday-foundations-pipeline-secret").to_string()
 
-        source_output = codepipeline.Artifact()
-        source_action = codepipeline_actions.CodeStarConnectionsSourceAction(
-                action_name="Github",
-                owner="VerticalRelevance",
-                repo="gameday-foundations",
-                output=source_output,
-                connection_arn= codestar_connections_github_arn,
-            ),
+        client = boto3.client("secretsmanager", "us-east-1")
+        codestar_connections_github_arn = client.get_secret_value(
+            SecretId='gameday-foundations-pipeline-secret'
+        )["SecretString"]
+
+        
+
+        #source_output = codepipeline.Artifact()
         pipeline = pipelines.CodePipeline(
-            self, "Pipeline", 
+            self, "GameDayPipeline", 
             self_mutation=False,
             synth = pipelines.ShellStep("Synth",
                 input = pipelines.CodePipelineSource.connection(
                     "VerticalRelevance/gameday-foundations",
                     "dev",
-                    connection_arn = "arn:aws:codestar-connections:region:account-id:connection/connection-id"
+                    connection_arn = codestar_connections_github_arn
                 ),
 
             
@@ -79,9 +83,6 @@ class PipelineCdkStack(Stack):
             )
         )
 
-            #What to do here? How do I link this build action with
-            ##the uplopad? Should I use a Lambda?
-       
             
 
 
