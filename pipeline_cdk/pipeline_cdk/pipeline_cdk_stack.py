@@ -64,19 +64,34 @@ class GameDayPipelineStack(Stack):
         client = boto3.client("secretsmanager", "us-east-1")
         codestar_connections_github_arn = client.get_secret_value(
             SecretId='gameday-foundations-pipeline-secret')["SecretString"].rstrip()
+        #github_token = client.get_secret_value(
+        #     SecretId='gameday-pipeline-github-token')["SecretString"].rstrip()
 
         #source_output = codepipeline.Artifact()
         pipeline = pipelines.CodePipeline(
             self, "GameDayPipeline",
             self_mutation=False,
             synth=pipelines.ShellStep("Synth",
-                                      input=pipelines.CodePipelineSource.connection(
+                                      input=pipelines.CodePipelineSource.git_hub(
                                           "VerticalRelevance/gameday-foundations",
                                           "dev",
-                                          connection_arn=codestar_connections_github_arn
+                                          authentication=core.SecretValue.secrets_manager(
+                                              'gameday-pipeline-github-token'
+                                          )
                                       ),
 
 
-                                      commands=["./upload.sh"]
+                                      commands= ["npm install -g aws-cdk",
+                                            "cd runbooks",
+                                            "echo 'Entered Runbooks directory'",
+
+                                            """for file in "/runbooks"/*; do
+                                                echo "uploading $file"
+                                                docname = basename $file .yml
+                                                aws ssm create-document \
+                                                    --content file://$file
+                                                    --name $docname
+                                                    --document-type "Automation""".replace('\n', ' ')]
+                                        
                                       )
         )
