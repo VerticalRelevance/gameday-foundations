@@ -16,5 +16,5 @@ for file in *; do
         --content file://"$file" \
         --name "$docname" \
         --document-format "YAML" \
-        --document-type "Automation"
+        --document-version "$LATEST"
 done 
