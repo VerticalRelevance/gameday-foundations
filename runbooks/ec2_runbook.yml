@@ -6,11 +6,8 @@ parameters:
     type: String
     description: "arn of the role that allows the automation to perform 
       actions on your behalf"
-  InstanceTags:
-    type: String
-    description: 'tag to determine which instances to target'
 mainSteps:
-  - name: getPrimaryInstanceForDeletion
+  - name: getInstancesForDeletion
     action: 'aws:executeScript'
     onFailure: Abort
     inputs:
@@ -19,7 +16,7 @@ mainSteps:
       InputPayload:
         instanceTag: ' {{ InstanceTags }}'
       Script: |-
-        def getInstance(events, context)
+        def termInstance(events, context)
           import boto3
 
           ec2 = boto3.client('ec2'
@@ -37,9 +34,33 @@ mainSteps:
           if not query['Reservations']:
               return({'noInstancesFound' : 'None found' })
           else:
+              ids = []
               response = query['Reservations']
               for instanceSets in response:
                   for instance in instanceSets
-                      id = instance['InstanceId']
-              return id
+                      ids.append(instance['InstanceId'])
+              return ids
+      outputs:
+        - Name: id
+          Selector: $.Payload
+          Type: StringMap
+      nextStep: termInstance
+  - name: terminateInstances
+    action: 'aws:executeScript'
+    onFailure: Abort
+    inputs:
+      Runtime: python3.7
+      Handler: getInstance
+      InputPayload:
+        instances: ' {{ getInstancesForDeletion.ids }}'
+      Script: |-          
+          def terminateInstances(events, context)  
+            import boto3
+
+            ec2 = boto3.client('ec2')
+            instances = events['instances']
+
+            ec2.terminate_instances(
+              InstanceIds= instances
+            
           
