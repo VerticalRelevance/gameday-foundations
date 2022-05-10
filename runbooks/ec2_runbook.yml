@@ -42,7 +42,7 @@ mainSteps:
       - Name: id
         Selector: $.Payload
         Type: StringMap
-    nextStep: terminateInstance
+    nextStep: terminateInstances
   - name: terminateInstances
     action: 'aws:executeScript'
     onFailure: Abort
@@ -60,5 +60,6 @@ mainSteps:
 
             ec2.terminate_instances(
               InstanceIds= instances
+            )
             
           
