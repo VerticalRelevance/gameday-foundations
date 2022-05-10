@@ -20,42 +20,7 @@ import boto3
 
 class GameDayPipelineStack(Stack):
 
-    def createCodePipelinePolicy(self, codestar_connections_github_arn):
-        codepipeline_policy = iam.ManagedPolicy(
-            self, "codepipeline_policy",
-            managed_policy_name="codepipeline_policy_gameday",
-            statements=[
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "ssm:CreateDocument"
-                    ],
-
-                    resources=[
-                        "document"
-                    ]
-                ),
-
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "codestar-connections:UseConnection"
-                    ],
-                    resources=[
-                        codestar_connections_github_arn
-                    ],
-                ),
-
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "codebuild:StartBuild"
-                    ],
-
-                )
-            ]
-        )
-
+   
     def __init__(self, scope: Construct, construct_id: str, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
 
@@ -90,7 +55,8 @@ class GameDayPipelineStack(Stack):
                     iam.PolicyStatement(
                         effect=iam.Effect.ALLOW,
                         actions=[
-                            "ssm:CreateDocument"
+                            "ssm:CreateDocument",
+                            "ssm:UpdateDocument"
                         ],
 
                         resources=[
