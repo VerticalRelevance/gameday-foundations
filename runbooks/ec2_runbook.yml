@@ -42,7 +42,7 @@ mainSteps:
       - Name: id
         Selector: $.Payload
         Type: StringMap
-    nextStep: termInstance
+    nextStep: terminateInstance
   - name: terminateInstances
     action: 'aws:executeScript'
     onFailure: Abort
