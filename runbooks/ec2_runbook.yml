@@ -17,9 +17,8 @@ mainSteps:
         def termInstance(events, context)
           import boto3
 
-          ec2 = boto3.client('ec2'
-          tag = events['instanceTag']
-          tagKey, tagValue = list(tag.items())[0]
+          ec2 = boto3.client('ec2')
+         
           query = ec2.describe_instances(
             Filters = [
               {
