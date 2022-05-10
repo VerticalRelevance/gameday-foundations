@@ -38,11 +38,11 @@ mainSteps:
                   for instance in instanceSets
                       ids.append(instance['InstanceId'])
               return ids
-      outputs:
-        - Name: id
-          Selector: $.Payload
-          Type: StringMap
-      nextStep: termInstance
+    outputs:
+      - Name: id
+        Selector: $.Payload
+        Type: StringMap
+    nextStep: termInstance
   - name: terminateInstances
     action: 'aws:executeScript'
     onFailure: Abort
