@@ -45,7 +45,7 @@ class GameDayPipelineStack(Stack):
                                           )
                                       ),
                                         commands= ["chmod u+x upload.sh", "./upload.sh"],
-                                        primary_output_directory="../pipeline_cdk/cdk.out"
+                                        #primary_output_directory="pipeline_cdk/cdk.out"
 
                                         
             ),
