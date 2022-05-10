@@ -13,8 +13,6 @@ mainSteps:
     inputs:
       Runtime: python3.7
       Handler: getInstance
-      InputPayload:
-        instanceTag: ' {{ InstanceTags }}'
       Script: |-
         def termInstance(events, context)
           import boto3
