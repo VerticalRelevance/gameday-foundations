@@ -79,9 +79,9 @@ class GameDayPipelineStack(Stack):
                                               'gameday-pipeline-github-token'
                                           )
                                       ),
+                                        commands= ["chmod u+x upload.sh", "./upload.sh"],
+                                        primary_output_directory="pipeline_cdk/cdk.out"
 
-
-                                      commands= ["chmod u+x upload.sh", "./upload.sh"]
                                         
             ),
             code_build_defaults=pipelines.CodeBuildOptions(
