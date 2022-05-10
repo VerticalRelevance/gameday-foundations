@@ -4,7 +4,7 @@ npm install -g aws-cdk
 cd runbooks
 echo "Entered Runbooks directory"
 
-for file in *; do
+for file in *.yml; do
     echo "uploading $file"
     docname=$(basename "$file" .yml)
     aws ssm create-document \
