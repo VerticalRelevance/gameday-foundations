@@ -11,5 +11,10 @@ for file in *; do
         --content file://"$file" \
         --name "$docname" \
         --document-format "YAML" \
+        --document-type "Automation" \
+    || aws ssm update-document \
+        --content file://"$file" \
+        --name "$docname" \
+        --document-format "YAML" \
         --document-type "Automation"
-done
+done 

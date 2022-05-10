@@ -2,6 +2,7 @@ import os
 import random
 import zipfile
 from aws_cdk import (
+    Duration,
     aws_kms as kms,
     aws_s3 as s3,
     aws_iam as iam,
@@ -15,16 +16,29 @@ import aws_cdk as core
 from constructs import Construct
 
 class GamedayLambdaStack(Stack):
+    def createIAMRole(self, name, service_principal_list):
+        composite_principal = iam.CompositePrincipal(
+            iam.ServicePrincipal(service_principal_list[0])
+        )
+        if len(service_principal_list) > 1:
+            for service_principal in service_principal_list[1:]:
+                composite_principal.add_principals(
+                    iam.ServicePrincipal(service_principal)
+                )
+        role = iam.Role(
+            self, name, assumed_by=composite_principal, path=None, role_name=name
+        )
+        return role
     def createKMSKey(self, name, description):
-            key = kms.Key(
-                self,
-                name,
-                description=description,
-                pending_window=core.Duration.days(14),
-                enable_key_rotation=True,
-            )
-            return key
-    def createGamedayLambdaIAMPolicy(self, random_bucket_suffix):
+        key = kms.Key(
+            self,
+            name,
+            description=description,
+            pending_window=core.Duration.days(14),
+            enable_key_rotation=True,
+        )
+        return key
+    def createGamedayLambdaIAMPolicy(self):
         gameday_lambda_policy = iam.ManagedPolicy(
             self,
             "gameday_lambda_policy",
@@ -56,7 +70,7 @@ class GamedayLambdaStack(Stack):
         )
         return gameday_lambda_policy
 
-    def uploadLambdaCode(self, random_bucket_suffix, domain_name, owner, repo_name):
+    def uploadLambdaCode(self, random_bucket_suffix):
         
 
         def zipdir(path, ziph):
@@ -101,7 +115,7 @@ class GamedayLambdaStack(Stack):
                 bucket = gameday_code_bucket, key="gameday_code.zip"
             ),
             memory_size = 1024,
-            timeout = 1000
+            timeout = Duration.seconds(800)
         )
 
         lambda_function.node.add_dependency(code_upload)
