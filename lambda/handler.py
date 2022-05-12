@@ -14,8 +14,7 @@ def handler(event, context):
     """
     runbook = event.get('runbook_name')
     assumed_role = event.get('automation_assume_role')
-    ssm.start_automation_execution(
-        DocumentName = runbook,
+    ssm.start_automation_execution(DocumentName = runbook,
         Parameters={
             'AutomationAssumeRole': [
                 assumed_role
