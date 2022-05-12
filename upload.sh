@@ -16,6 +16,5 @@ for file in *.yml; do
         --content file://"$file" \
         --name "$docname" \
         --document-format "YAML" \
-        --document-version '$LATEST' \
-        --default-version '$LATEST'
+        --document-version '$LATEST'
 done 
