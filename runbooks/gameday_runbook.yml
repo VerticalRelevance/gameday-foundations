@@ -56,7 +56,7 @@ mainSteps:
             import boto3
 
             ssm = boto3.client('ssm', 'us-east-1')
-            instances = events['instances']
+            instances = events['instances'].strip()
             ssm.send_command(
               InstanceIds = [instances]
               DocumentName = "StressMemory"
