@@ -1,6 +1,11 @@
 description: 'terminate ec2 instances'
 schemaVersion: '0.3'
-assumeRole: "gameday_automation_role"
+assumeRole: "{{ AutomationAssumeRole }}"
+parameters:
+  AutomationAssumeRole:
+    type: String
+    description: "arn of the role that allows the automation to perform 
+      actions on your behalf"
 mainSteps:
   - name: getInstancesForDeletion
     action: 'aws:executeScript'
