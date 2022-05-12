@@ -55,7 +55,7 @@ mainSteps:
           def terminateInstances(events, context):  
             import boto3
 
-            ec2 = boto3.client('ec2', "us-east-1")
+            ec2 = boto3.client('ec2', 'us-east-1')
             instances = events['instances']
 
             ec2.terminate_instances(

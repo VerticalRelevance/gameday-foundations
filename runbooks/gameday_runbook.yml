@@ -55,10 +55,10 @@ mainSteps:
           def stressMemory(events, context):  
             import boto3
 
-            ssm = boto3.client('ssm', "us-east-1")
+            ssm = boto3.client('ssm', 'us-east-1')
             instances = events['instances']
             ssm.send_command(
-              InstanceIds = instance
+              InstanceIds = [instances]
               DocumentName = "StressMemory"
             )
             
