@@ -5,7 +5,7 @@ parameters:
   AutomationAssumeRole:
     type: String
     description: "arn of the role that allows the automation to perform 
-      actions on your behalf"
+      actions on your behalf (arn)"
 mainSteps:
   - name: getInstancesForDeletion
     action: 'aws:executeScript'
