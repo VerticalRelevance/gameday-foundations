@@ -1,4 +1,4 @@
-description: 'TO DO'
+description: 'Runs the stress memory command on all instances tagged for gameday'
 schemaVersion: '0.3'
 assumeRole: "{{ AutomationAssumeRole }}"
 parameters:
@@ -22,8 +22,8 @@ mainSteps:
           query = ec2.describe_instances(
             Filters = [
               {
-                "Key" : 'purpose'
-                "Values" : 'gameday-testing'
+                "Key" : "purpose",
+                "Values" : "gameday-testing"
               }
             ]
           )
@@ -51,14 +51,14 @@ mainSteps:
       InputPayload:
         instances: ' {{ getInstancesForDeletion.ids }}'
       Script: |-          
-          def terminateInstances(events, context):  
+          def stressMemory(events, context):  
             import boto3
 
-            ec2 = boto3.client('ec2')
+            ssm = boto3.client('ssm')
             instances = events['instances']
-
-            ec2.terminate_instances(
-              InstanceIds= instances
+            ssm.send_command(
+              InstanceIds = instance
+              DocumentName = "StressMemory"
             )
             
           

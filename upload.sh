@@ -16,8 +16,5 @@ for file in *.yml; do
         --content file://"$file" \
         --name "$docname" \
         --document-format "YAML" \
-        --document-version '$LATEST' \
-        && aws ssm update-document-default-version \
-            --name "$docname" \
-            --document-version '$LATEST'
+        --document-version '$LATEST'
 done 

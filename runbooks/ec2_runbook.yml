@@ -22,7 +22,7 @@ mainSteps:
           query = ec2.describe_instances(
             Filters = [
               {
-                "Key" : 'purpose'
+                "Key" : 'purpose',
                 "Values" : 'gameday-testing'
               }
             ]
