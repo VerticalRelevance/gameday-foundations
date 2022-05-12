@@ -12,7 +12,7 @@ mainSteps:
     onFailure: Abort
     inputs:
       Runtime: python3.7
-      Handler: getInstance
+      Handler: getInstancesForDeletion
       Script: |-
         def getInstancesForDeletion(events, context):
           import boto3
@@ -47,7 +47,7 @@ mainSteps:
     onFailure: Abort
     inputs:
       Runtime: python3.7
-      Handler: getInstance
+      Handler: terminateInstances
       InputPayload:
         instances: ' {{ getInstancesForDeletion.ids }}'
       Script: |-          
