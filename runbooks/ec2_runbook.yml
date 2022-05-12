@@ -14,7 +14,7 @@ mainSteps:
       Runtime: python3.7
       Handler: getInstance
       Script: |-
-        def termInstance(events, context)
+        def termInstance(events, context):
           import boto3
 
           ec2 = boto3.client('ec2')
@@ -51,7 +51,7 @@ mainSteps:
       InputPayload:
         instances: ' {{ getInstancesForDeletion.ids }}'
       Script: |-          
-          def terminateInstances(events, context)  
+          def terminateInstances(events, context):  
             import boto3
 
             ec2 = boto3.client('ec2')
