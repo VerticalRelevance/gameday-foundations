@@ -14,7 +14,7 @@ mainSteps:
       Runtime: python3.7
       Handler: getInstancesForStress
       Script: |-
-        def getInstancesForStress(events, context):
+         def getInstancesForDeletion(events, context):
           import boto3
 
           ec2 = boto3.client('ec2')
@@ -22,8 +22,8 @@ mainSteps:
           query = ec2.describe_instances(
             Filters = [
               {
-                "Name" : "purpose",
-                "Values" : ["gameday-testing"]
+                "Name" : 'tag:purpose',
+                "Values" : ['gameday-testing']
               }
             ]
           )
@@ -33,14 +33,15 @@ mainSteps:
           else:
               ids = []
               response = query['Reservations']
-              for instanceSets in response:
-                  for instance in instanceSets:
+              for result in response:
+                  instanceSet = result['Instances']
+                  for instance in instanceSet:
                       ids.append(instance['InstanceId'])
               return ids
     outputs:
       - Name: ids
         Selector: $.Payload
-        Type: StringMap
+        Type: StringList
     nextStep: terminateInstances
   - name: terminateInstances
     action: 'aws:executeScript'
@@ -54,7 +55,7 @@ mainSteps:
           def stressMemory(events, context):  
             import boto3
 
-            ssm = boto3.client('ssm')
+            ssm = boto3.client('ssm', "us-east-1")
             instances = events['instances']
             ssm.send_command(
               InstanceIds = instance
