@@ -41,7 +41,7 @@ mainSteps:
     outputs:
       - Name: ids
         Selector: $.Payload
-        Type: StringMap
+        Type: StringList
     nextStep: terminateInstances
   - name: terminateInstances
     action: 'aws:executeScript'
@@ -59,7 +59,7 @@ mainSteps:
             instances = events['instances']
 
             ec2.terminate_instances(
-              InstanceIds= instances
+              InstanceIds= [instances]
             )
             
           
