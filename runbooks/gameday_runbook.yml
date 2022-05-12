@@ -23,7 +23,7 @@ mainSteps:
             Filters = [
               {
                 "Name" : "purpose",
-                "Values" : "gameday-testing"
+                "Values" : ["gameday-testing"]
               }
             ]
           )
