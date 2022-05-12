@@ -56,7 +56,8 @@ class GameDayPipelineStack(Stack):
                         effect=iam.Effect.ALLOW,
                         actions=[
                             "ssm:CreateDocument",
-                            "ssm:UpdateDocument"
+                            "ssm:UpdateDocument",
+                            "ssm:UpdateDocumentDefaultVersion"
                         ],
 
                         resources=[
