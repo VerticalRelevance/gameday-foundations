@@ -23,5 +23,5 @@ for file in *.yml; do
         --name "$docname" | jq '.DocumentVersions | .[0] | .DocumentVersion') 
     aws ssm update-document-default-version \
     --name "$docname" \
-    --document-version "$version"
+    --document-version $version
 done 

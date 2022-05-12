@@ -52,7 +52,8 @@ class GameDayPipelineStack(Stack):
                         actions=[
                             "ssm:CreateDocument",
                             "ssm:UpdateDocument",
-                            "ssm:UpdateDocumentDefaultVersion"
+                            "ssm:UpdateDocumentDefaultVersion",
+                            "ssm:ListDocumentVersions"
                         ],
 
                         resources=[
