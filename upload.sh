@@ -5,16 +5,23 @@ cd runbooks
 echo "Entered Runbooks directory"
 
 for file in *.yml; do
-    echo "uploading $file"
+    echo "Attempting to upload new SSM Automation Document: $file"
     docname=$(basename "$file" .yml)
     aws ssm create-document \
         --content file://"$file" \
         --name "$docname" \
         --document-format "YAML" \
         --document-type "Automation" \
-    || aws ssm update-document \
+    || 
+    echo "Attempting to update existing SSM Automation Document: $file"
+    aws ssm update-document \
         --content file://"$file" \
         --name "$docname" \
         --document-format "YAML" \
         --document-version '$LATEST'
+    version=$(aws ssm list-document-versions \
+        --name "$docname" | jq '.DocumentVersions | .[0] | .DocumentVersion') 
+    aws ssm update-document-default-version \
+    --name "$docname" \
+    --document-version "$version"
 done 

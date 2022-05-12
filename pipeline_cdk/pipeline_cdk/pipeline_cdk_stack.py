@@ -10,7 +10,6 @@ from aws_cdk import (
     aws_iam as iam
 )
 
-from cdk_ssm_document import Document
 import os
 from pathlib import Path
 from constructs import Construct
