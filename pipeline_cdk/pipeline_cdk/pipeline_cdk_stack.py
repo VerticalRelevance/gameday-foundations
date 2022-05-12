@@ -24,13 +24,9 @@ class GameDayPipelineStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
 
-        #codestar_connections_github_arn = core.SecretValue.secrets_manager("gameday-foundations-pipeline-secret").to_string()
 
         client = boto3.client("secretsmanager", "us-east-1")
-        codestar_connections_github_arn = client.get_secret_value(
-            SecretId='gameday-foundations-pipeline-secret')["SecretString"].rstrip()
-        #github_token = client.get_secret_value(
-        #     SecretId='gameday-pipeline-github-token')["SecretString"].rstrip()
+        
 
         #source_output = codepipeline.Artifact()
         pipeline = pipelines.CodePipeline(

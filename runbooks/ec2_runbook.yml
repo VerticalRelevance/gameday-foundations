@@ -34,9 +34,8 @@ mainSteps:
               ids = []
               response = query['Reservations']
               for result in response:
-                  instanceSet = results['Instances']
+                  instanceSet = result['Instances']
                   for instance in instanceSet:
-                      print(instance)
                       ids.append(instance['InstanceId'])
               return ids
     outputs:
