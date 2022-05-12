@@ -20,8 +20,8 @@ for file in *.yml; do
         --document-format "YAML" \
         --document-version '$LATEST'
     version=$(aws ssm list-document-versions \
-        --name "$docname" | jq '.DocumentVersions | .[0] | .DocumentVersion') 
+        --name "$docname" | jq '.DocumentVersions | .[0] | .DocumentVersion | tonumber') 
     aws ssm update-document-default-version \
     --name "$docname" \
-    --document-version $version
+    --document-version "$version"
 done 
