@@ -57,9 +57,9 @@ mainSteps:
 
             ec2 = boto3.client('ec2', 'us-east-1')
             instances = events['instances']
-            for instance in instances:
-              instance = instance.strip()
-            ec2.terminate_instances(
+            for i, instance in enumerate(instances):
+              instances[i] = instance.strip()
+            return ec2.terminate_instances(
               InstanceIds= [instances]
             )
             
