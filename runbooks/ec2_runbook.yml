@@ -1,0 +1,66 @@
+description: 'terminate ec2 instances (edit)'
+schemaVersion: '0.3'
+assumeRole: "{{ AutomationAssumeRole }}"
+parameters:
+  AutomationAssumeRole:
+    type: String
+    description: "arn of the role that allows the automation to perform 
+      actions on your behalf (arn)"
+mainSteps:
+  - name: getInstancesForDeletion
+    action: 'aws:executeScript'
+    onFailure: Abort
+    inputs:
+      Runtime: python3.7
+      Handler: getInstancesForDeletion
+      Script: |-
+        def getInstancesForDeletion(events, context):
+          import boto3
+
+          ec2 = boto3.client('ec2')
+         
+          query = ec2.describe_instances(
+            Filters = [
+              {
+                "Name" : 'tag:purpose',
+                "Values" : ['gameday-testing']
+              }
+            ]
+          )
+
+          if not query['Reservations']:
+              return({'noInstancesFound' : 'None found' })
+          else:
+              ids = []
+              response = query['Reservations']
+              for result in response:
+                  instanceSet = result['Instances']
+                  for instance in instanceSet:
+                      ids.append(instance['InstanceId'])
+              return ids
+    outputs:
+      - Name: ids
+        Selector: $.Payload
+        Type: StringList
+    nextStep: terminateInstances
+  - name: terminateInstances
+    action: 'aws:executeScript'
+    onFailure: Abort
+    inputs:
+      Runtime: python3.7
+      Handler: terminateInstances
+      InputPayload:
+        instances: ' {{ getInstancesForDeletion.ids }}'
+      Script: |-          
+          def terminateInstances(events, context):  
+            import boto3
+
+            ec2 = boto3.client('ec2', 'us-east-1')
+            instances = events['instances']
+            for i, instance in enumerate(instances):
+              instances[i] = instance.strip()
+            return ec2.terminate_instances(
+              InstanceIds= [instances]
+            )
+            
+          

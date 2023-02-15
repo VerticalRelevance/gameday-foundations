@@ -1,0 +1,40 @@
+description: 'a test runbook that does nothing but shows the idea behind the pipeline - but this time testing the udpate'
+schemaVersion: '0.3'
+assumeRole: "{{ AutomationAssumeRole }}"
+parameters:
+  AutomationAssumeRole:
+    type: String
+    description: "arn of the role that allows the automation to perform 
+      actions on your behalf"
+mainSteps:
+  - name: getInstancesForStress
+    action: 'aws:executeScript'
+    onFailure: Abort
+    inputs:
+      Runtime: python3.7
+      Handler: getInstancesForStress
+      Script: |-
+         def getInstancesForDeletion(events, context):
+          import boto3
+
+          ec2 = boto3.client('ec2')
+         
+          query = ec2.describe_instances(
+            Filters = [
+              {
+                "Name" : 'tag:purpose',
+                "Values" : ['gameday-testing']
+              }
+            ]
+          )
+
+          if not query['Reservations']:
+              return({'noInstancesFound' : 'None found' })
+          else:
+              ids = []
+              response = query['Reservations']
+              for result in response:
+                  instanceSet = result['Instances']
+                  for instance in instanceSet:
+                      ids.append(instance['InstanceId'])
+              return ids

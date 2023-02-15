@@ -1,0 +1,51 @@
+description: |
+  bar
+  baz
+schemaVersion: '0.3'
+parameters:
+  dbname:
+    type: String
+    description: Database Name to create index within
+  idx_name:
+    type: String
+    description: Name of the index to be created
+  tbl_name:
+    type: String
+    description: Table name to create index on
+  col_name:
+    type: String
+    description: Column name to create index on
+  user:
+    type: String
+    description: Admin User to create index as (default stored in SSM)
+    default: "{{ssm:psql_admin_user}}"
+  password:
+    type: String
+    description: Admin User password stored in SSM (default stored in SSM)
+    default: "{{ssm:psql_admin_pass}}"
+mainSteps:
+  - name: Create_Index
+    action: 'aws:executeScript'
+    inputs:
+      Runtime: python3.6
+      Handler: createIndex
+      Script: |-
+        def createIndex(events, context):
+          import psycopg2
+
+          host = events['host']
+          dbname = events['dbname']
+          user = events['user']
+          password = events['password']
+          idx_name = events['idx_name']
+          tbl_name = events['tbl_name']
+          col_name = events['col_name']
+
+          conn = psycopg2.connect(f"dbname={dbname} user={user} host={host} password={password}")
+          conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+          cur = conn.cursor()
+          cur.execute(f''' CREATE INDEX CONCURRENTLY {idx_name} ON {tbl_name} ({col_name});''')
+    description: |-
+      bar
+      baz
+    isEnd: true
